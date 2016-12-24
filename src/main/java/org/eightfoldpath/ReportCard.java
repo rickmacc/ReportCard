@@ -8,23 +8,20 @@ import java.text.SimpleDateFormat;
 
 public class ReportCard {
 
-    private String studentName;
-    private ArrayList grades;
-    private Date dateReported;
-    
-    public static final String CLASS_NAME = "CLASS_NAME"; 
-    public static final String GRADE = "GRADE";
-
     public static final String GRADE_A = "A";
     public static final String GRADE_B = "B";
     public static final String GRADE_C = "C";
     public static final String GRADE_D = "D";
     public static final String GRADE_F = "F";
 
+    private String studentName;
+    private HashMap grades;
+    private Date dateReported;
+
     public ReportCard() {
     }
 
-    public ReportCard(String studentName, ArrayList grades) {
+    public ReportCard(String studentName, HashMap grades) {
         this.studentName = studentName;
         this.grades = grades;
         this.dateReported = new Date();
@@ -47,29 +44,19 @@ public class ReportCard {
     }
 
     public void addGradeForClass(String className, int grade) {
-        HashMap gradeForClass = new HashMap();
-        gradeForClass.put(CLASS_NAME, className);
-        gradeForClass.put(GRADE, new Integer(grade));
-        grades.add(gradeForClass);
+        grades.put(className, new Integer(grade));
     }
 
     public boolean removeGradeForClass(String className) {
         boolean gradeRemoved = false;
-        if (grades != null) {
-            Iterator<HashMap> it = grades.iterator();
-            while (it.hasNext()) {
-                HashMap grade = it.next();
-                if (grade.get(CLASS_NAME).equals(className)) {
-                    grades.remove(grade);
-                    gradeRemoved = true;
-                    break;
-                }
-            }
+        if (grades != null && grades.containsKey(className)) {
+            grades.remove(className);
+            gradeRemoved = true;
         }
         return gradeRemoved;
     }
 
-    public ArrayList getGrades() {
+    public HashMap getGrades() {
         return grades;
     }
 
@@ -77,14 +64,7 @@ public class ReportCard {
         Integer gradeForClass = null;
 
         if (grades != null) {
-            Iterator<HashMap> it = grades.iterator();
-            while (it.hasNext()) {
-                HashMap grade = it.next();
-                if (grade.get(CLASS_NAME).equals(className)) {
-                    gradeForClass = (Integer) grade.get(GRADE);
-                    break;
-                }
-            }
+            gradeForClass = (Integer) grades.get(className);
         }
 
         return gradeForClass;
@@ -107,6 +87,7 @@ public class ReportCard {
         return letterGrade;
     }
 
+    @Override
     public String toString() {
 
         SimpleDateFormat df = new SimpleDateFormat("yyyy/MM/dd");
@@ -115,11 +96,7 @@ public class ReportCard {
         sb.append("Report Card for " + studentName + "\n");
         sb.append("Date Reported: " +  df.format(dateReported) + "\n");
         if (grades != null) {
-            Iterator<HashMap> it = grades.iterator();
-            while (it.hasNext()) {
-                HashMap grade = it.next();
-                sb.append("Grade for " + grade.get(CLASS_NAME).toString() + " - " + grade.get(GRADE).toString() + "\n");
-            }
+            grades.forEach((key, value)->sb.append("Grade for " + key + " - " + value.toString() + "\n"));
         }
 
         return sb.toString();
